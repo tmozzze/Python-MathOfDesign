@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.animation import FuncAnimation
+from pygame import mixer
 
 
 def generate_spiral(angle, num_points=200):
@@ -34,6 +35,10 @@ def create_animation(angle, num_points=100):
 
 
 def main():
+    # ZVUK INIT
+    mixer.init()
+    mixer.music.load('materials/sound_for_1.mp3')
+
     print("Выберите угол наклона для спирали:")
     print("1. Угол 0 (стандартная спираль)")
     print("2. Угол 45 градусов")
@@ -51,7 +56,9 @@ def main():
         print("Неверный выбор, используем угол 0 по умолчанию.")
         angle = 0
 
+    mixer.music.play()
     create_animation(angle)
+
 
 
 if __name__ == "__main__":
