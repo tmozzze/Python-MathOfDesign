@@ -3,15 +3,19 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from matplotlib.widgets import Slider, Button
 from pygame import mixer
+from threading import Thread
 
 BOX_SIZE = 10
 NUM_BALLS = np.random.randint(2, 5)
 BALL_SIZE = 0.5
 BALL_COLORS = np.random.rand(NUM_BALLS, 3)
 
+
 #ZVUK INIT
 mixer.init()
 mixer.music.load('materials/sound_for_7.mp3')
+def music():mixer.music.play()
+
 
 positions = np.random.uniform(
     BALL_SIZE, BOX_SIZE - BALL_SIZE, (NUM_BALLS, 2)
@@ -40,7 +44,7 @@ def resolve_collision(i, j):
 
     if overlap > 0:
         #ZVUK
-        mixer.music.play()
+        Thread(target = music, daemon=True).start()
 
         collision_dir = delta_pos / dist if dist != 0 else np.array([1, 0])
 
@@ -65,26 +69,26 @@ def update(frame):
     for i in range(len(positions)):
         if positions[i, 0] - BALL_SIZE < 0:
             # ZVUK
-            mixer.music.play()
+            Thread(target = music, daemon=True).start()
 
             velocities[i, 0] *= -1
             positions[i, 0] = BALL_SIZE
         elif positions[i, 0] + BALL_SIZE > BOX_SIZE:
             # ZVUK
-            mixer.music.play()
+            Thread(target = music, daemon=True).start()
 
             velocities[i, 0] *= -1
             positions[i, 0] = BOX_SIZE - BALL_SIZE
 
         if positions[i, 1] - BALL_SIZE < 0:
             # ZVUK
-            mixer.music.play()
+            Thread(target = music, daemon=True).start()
 
             velocities[i, 1] *= -1
             positions[i, 1] = BALL_SIZE
         elif positions[i, 1] + BALL_SIZE > BOX_SIZE:
             # ZVUK
-            mixer.music.play()
+            Thread(target = music, daemon=True).start()
 
             velocities[i, 1] *= -1
             positions[i, 1] = BOX_SIZE - BALL_SIZE
