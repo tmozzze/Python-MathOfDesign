@@ -3,6 +3,19 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from matplotlib.collections import PolyCollection
 from matplotlib.patches import Polygon
+from pygame import mixer
+from matplotlib.widgets import Slider
+
+#ZVUK INIT
+mixer.init()
+mixer.music.load('materials/sound_for_5.mp3')
+mixer.music.play()
+
+global trapezoid_scale, perpendicular_scale
+trapezoid_scale = 1.0
+perpendicular_scale = 1.0
+
+
 
 amplitude = np.random.uniform(0.1, 1.0)
 frequency = np.random.uniform(0.1, 1.5)
@@ -15,7 +28,7 @@ fig, ax = plt.subplots()
 line, = ax.plot(x, y, lw=2, color='cyan', alpha=0.4)
 tangent_patch = Polygon([[0, 0], [0, 0], [0, 0], [0, 0]], closed=True, color='brown', alpha=0.7)
 perpendicular_line, = ax.plot([], [], color='black', lw=2)
-triangle_patch = Polygon([[0, 0], [0, 0], [0, 0]], closed=True, color='red', alpha=0.5)
+triangle_patch = Polygon([[0, 0], [0, 0], [0, 0]], closed=True, color='black', alpha=0.5)
 
 ax.add_patch(tangent_patch)
 ax.add_patch(triangle_patch)
@@ -32,7 +45,29 @@ ax.set_yticks([])
 
 ax.set_title("Кораблик плавает круто по волнам ЭЩКЕРЕ")
 
+
+#SLIDER FUNC FOR SIZE OF SHIP
+def update_ship_size(val):
+    global trapezoid_scale
+    trapezoid_scale = ship_size_slider.val
+
+def update_mast_size(val):
+    global perpendicular_scale
+    perpendicular_scale = mast_size_slider.val
+
+
+#SLIDER
+ax_ship_size_slider = plt.axes([0.2, 0.05, 0.65, 0.03], facecolor='lightgoldenrodyellow')
+ship_size_slider = Slider(ax_ship_size_slider, 'Size of SHIP', 0.1, 2.0, valinit=1.0)
+ship_size_slider.on_changed(update_ship_size)
+
+ax_mast_size_slider = plt.axes([0.2, 0.1, 0.65, 0.03], facecolor='lightgoldenrodyellow')
+mast_size_slider = Slider(ax_mast_size_slider, 'Size of MAST', 0.1, 2.0, valinit=1.0)
+mast_size_slider.on_changed(update_mast_size)
+
+
 def update(frame):
+
     shift = frame * 0.1
     y_shifted = amplitude * np.sin(frequency * (x + shift) + phase)
     line.set_data(x, y_shifted)
@@ -55,8 +90,8 @@ def update(frame):
     dy /= norm
 
     # Param Korablik
-    base_length = 0.7
-    offset_length = 2
+    base_length = 0.7 * trapezoid_scale
+    offset_length = 2 * trapezoid_scale
 
     top_left = [tangent_x - dx * base_length / 2, tangent_y - dy * base_length / 2]
     top_right = [tangent_x + dx * base_length / 2, tangent_y + dy * base_length / 2]
@@ -81,15 +116,15 @@ def update(frame):
     perp_dx /= norm
     perp_dy /= norm
 
-    perp_length = 1.1
+    perp_length = 1.1 * perpendicular_scale
     perp_end_x = mid_x + perp_dx * perp_length
     perp_end_y = mid_y + perp_dy * perp_length
 
     perpendicular_line.set_data([mid_x, perp_end_x], [mid_y, perp_end_y])
 
     # Treugolnik
-    triangle_base_length = 0.5
-    triangle_height = 1.0
+    triangle_base_length = 0.5 * perpendicular_scale
+    triangle_height = 1.0 * perpendicular_scale
 
     triangle_left_x = mid_x - perp_dy * triangle_base_length / 2
     triangle_left_y = mid_y + perp_dx * triangle_base_length / 2

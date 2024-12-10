@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import random
 from matplotlib.animation import FuncAnimation
+from pygame import mixer
 
 def draw_snowflake_branch(x, y, angle, length, depth, color, ax):
     if depth == 0:
@@ -47,10 +48,16 @@ def update(frame, ax, num_branches, length, max_depth, color, angle):
 def main():
     num_branches, length, max_depth, color, angle = random_params()
 
+
     fig, ax = plt.subplots(figsize=(6, 6))
 
     anime = FuncAnimation(fig, update, frames=np.arange(1, max_depth + 1), fargs=(ax, num_branches, length, max_depth, color, angle),
                         interval=500, repeat=False)
+
+    # ZVUK INIT
+    mixer.init()
+    mixer.music.load('materials/sound_for_4.mp3')
+    mixer.music.play()
 
     plt.show()
 
